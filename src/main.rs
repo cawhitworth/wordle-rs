@@ -1,14 +1,21 @@
 use std::cmp::Ordering;
-use std::collections::HashMap;
+use std::collections::{HashMap,HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+fn score_string(s1: &str, freqs: &HashMap<char, u32>) -> u32
+{
+    s1.chars().map(|c| freqs.get(&c).unwrap()).sum()
+}
+
 fn compare_strings(s1: &str, s2: &str, freqs: &HashMap<char, u32>) -> Ordering
 {
-    let score1 : u32 = s1.chars().map(|c| freqs.get(&c).unwrap()).sum();
-    let score2 : u32 = s2.chars().map(|c| freqs.get(&c).unwrap()).sum();
-    
-    score1.cmp(&score2)
+    score_string(s1, freqs).cmp(&score_string(s2, freqs))
+}
+
+fn all_diff(s: &str) -> bool {
+    let hs : HashSet<char> = HashSet::from_iter(s.chars());
+    hs.len() == s.len()
 }
 
 fn main() {
@@ -19,6 +26,7 @@ fn main() {
               .filter(|w| w.as_ref().unwrap().len() == 5)
               .map(|w| w.unwrap().to_ascii_lowercase())
               .filter(|w| w.chars().all(|c| c.is_ascii_alphabetic()))
+              .filter(|w| all_diff(w))
               .collect();
 
     let mut letter_frequencies: HashMap<char, u32> = HashMap::new();
@@ -36,5 +44,5 @@ fn main() {
     let mut five_characters_vec : Vec<_> = five_characters.clone();
     five_characters_vec.sort_by(|s1, s2| compare_strings(s1, s2, &letter_frequencies));
 
-    five_characters_vec.iter().for_each(|f| println!("{}", f));
+    five_characters_vec.iter().for_each(|f| println!("{} : {}", f, score_string(f, &letter_frequencies)));
 }
