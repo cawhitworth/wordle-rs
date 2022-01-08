@@ -31,9 +31,7 @@ fn main() {
 
     letter_frequencies_vec.sort_by(|a,b| b.1.cmp(a.1));
 
-    for (k,v) in letter_frequencies_vec {
-        println!("{} : {}", k, v);
-    }
+    letter_frequencies_vec.iter().for_each(|(k,v)| println!("{} : {}", k, v) );
 
     let mut five_characters_vec : Vec<_> = five_characters.clone();
     five_characters_vec.sort_by(|s1, s2| compare_strings(s1, s2, &letter_frequencies));
