@@ -66,7 +66,6 @@ fn main() {
               .map(|w| w.unwrap().to_ascii_lowercase())
               .filter(|w| w.chars().all(|c| c.is_ascii_alphabetic()))
               .filter(|w| all_diff(w))
-              .filter(|w| check_constraint(w, &c))
               .collect();
 
     let mut letter_frequencies: HashMap<char, usize> = HashMap::new();
@@ -81,7 +80,11 @@ fn main() {
 
     letter_frequencies_vec.iter().for_each(|(k,v)| println!("{} : {}", k, v) );
 
-    let mut five_characters_vec : Vec<_> = five_characters.clone();
+    let mut five_characters_vec : Vec<&String> = five_characters
+              .iter()
+              .filter(|w| check_constraint(w, &c))
+              .collect();
+
     five_characters_vec.sort_by(|s1, s2| compare_strings(s1, s2, &letter_frequencies));
 
     five_characters_vec.iter().for_each(|f| println!("{} : {}", f, score_string(f, &letter_frequencies)));
