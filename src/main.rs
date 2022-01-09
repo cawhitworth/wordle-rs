@@ -6,7 +6,8 @@ use std::io::{BufRead, BufReader};
 enum Position
 {
     Any,
-    Fixed(usize)
+    Fixed(usize),
+    None
 }
 
 struct Constraint
@@ -26,11 +27,15 @@ fn check_constraint(s1: &str, constraints: &Vec<Constraint>) -> bool
                 s_mut.replace_range(i..i+1, ".");
                 r
             },
+
             Position::Any => {
                 match s_mut.chars().position(|c| constr.c == c) {
                     None => false,
                     Some(i) => { s_mut.replace_range(i..i+1, "."); true }
                 }
+            },
+            Position::None => {
+                !s_mut.chars().any(|c| c == constr.c)
             }
         }
     }
@@ -54,8 +59,16 @@ fn all_diff(s: &str) -> bool {
 
 fn main() {
     let c = vec! [
-        Constraint { c: 'a', p: Position::Fixed(0) },
-        Constraint { c: 's', p: Position::Any }
+        Constraint { c: 'e', p: Position::Fixed(4) },
+        Constraint { c: 'r', p: Position::Fixed(2) },
+        Constraint { c: 'o', p: Position::Fixed(1) },
+        Constraint { c: 'a', p: Position::None },
+        Constraint { c: 'i', p: Position::None },
+        Constraint { c: 's', p: Position::None },
+        Constraint { c: 'd', p: Position::None },
+        Constraint { c: 'n', p: Position::None },
+        Constraint { c: 'f', p: Position::None },
+        Constraint { c: 'c', p: Position::None },
     ];
 
     let reader = BufReader::new(File::open("words").expect("Cannot open words"));
@@ -65,7 +78,6 @@ fn main() {
               .filter(|w| w.as_ref().unwrap().len() == 5)
               .map(|w| w.unwrap().to_ascii_lowercase())
               .filter(|w| w.chars().all(|c| c.is_ascii_alphabetic()))
-              .filter(|w| all_diff(w))
               .collect();
 
     let mut letter_frequencies: HashMap<char, usize> = HashMap::new();
