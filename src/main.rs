@@ -7,6 +7,7 @@ enum Position
 {
     Any,
     Fixed(usize),
+    Not(usize),
     None
 }
 
@@ -21,13 +22,15 @@ fn check_constraint(s1: &str, constraints: &Vec<Constraint>) -> bool
     let mut s_mut : String = String::from(s1);
     let mut result = true;
     for constr in constraints {
-        result &= match constr.p {
+        result = match constr.p {
             Position::Fixed(i) => {
                 let r = s_mut.chars().nth(i).unwrap() == constr.c;
                 s_mut.replace_range(i..i+1, ".");
                 r
             },
-
+            Position::Not(i) => {
+                s_mut.chars().nth(i).unwrap() != constr.c
+            }
             Position::Any => {
                 match s_mut.chars().position(|c| constr.c == c) {
                     None => false,
@@ -37,6 +40,10 @@ fn check_constraint(s1: &str, constraints: &Vec<Constraint>) -> bool
             Position::None => {
                 !s_mut.chars().any(|c| c == constr.c)
             }
+        };
+
+        if result == false {
+            break;
         }
     }
     result
@@ -44,7 +51,8 @@ fn check_constraint(s1: &str, constraints: &Vec<Constraint>) -> bool
 
 fn score_string(s1: &str, freqs: &HashMap<char, usize>) -> usize
 {
-    s1.chars().map(|c| freqs.get(&c).unwrap()).sum()
+    let hs : HashSet<char> = HashSet::from_iter(s1.chars());
+    hs.iter().map(|c| freqs.get(&c).unwrap()).sum()
 }
 
 fn compare_strings(s1: &str, s2: &str, freqs: &HashMap<char, usize>) -> Ordering
@@ -67,6 +75,8 @@ fn main() {
         Constraint { c: 's', p: Position::None },
         Constraint { c: 'd', p: Position::None },
         Constraint { c: 'n', p: Position::None },
+        Constraint { c: 't', p: Position::None },
+        Constraint { c: 'h', p: Position::None },
         Constraint { c: 'f', p: Position::None },
         Constraint { c: 'c', p: Position::None },
     ];
