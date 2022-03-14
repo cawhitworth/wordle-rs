@@ -3,6 +3,7 @@ use std::collections::{HashMap,HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+#[allow(dead_code)]
 enum Position
 {
     Any,
@@ -60,6 +61,7 @@ fn compare_strings(s1: &str, s2: &str, freqs: &HashMap<char, usize>) -> Ordering
     score_string(s1, freqs).cmp(&score_string(s2, freqs))
 }
 
+#[allow(dead_code)]
 fn all_diff(s: &str) -> bool {
     let hs : HashSet<char> = HashSet::from_iter(s.chars());
     hs.len() == s.len()
